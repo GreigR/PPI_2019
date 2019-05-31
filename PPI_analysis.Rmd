@@ -16,18 +16,109 @@ library(tidyverse)
 library(readxl)
 library(lubridate)
 library(skimr)
+library(janitor)
 
 ```
 
 ```{r}
-Raw <- read_csv("PPI.csv")
+#Read the raw data and clean up the names
 
-glimpse(Raw)
+Raw <- read_csv("PPI.csv") %>% 
+  clean_names()
+
+Col_names <- names(Raw)
+Raw_names <- as.data.frame(Col_names)
+Raw_names <- mutate_at(Raw_names, vars(Col_names), str_to_title)
+names(Raw) <- Raw_names$Col_names
+
+#Remove hidden colums in the spreadsheet
+
+Sample <- Raw %>% 
+  select( Nhi, Age, Gender, Discharge_destination, Ward, Speciality, Ppi, Total_daily_dose, Duration, Started_this_admission, Concurrent_gi_irritant_therapy, Indication_recorded, If_new_on_admission_indication_in_discharge_summary, Polypharmacy)
+
+Sample <- Sample %>% 
+  rename(
+    NHI = Nhi,
+    PPI = Ppi)
+
+glimpse(Sample)
 ```
 
 ```{r}
-DA_Data <- Raw %>% 
-  select(NHI)
-write.table(DA_Data, "/home/greig/R-projects/PPI_2019/PPI_NHI.csv", row.names = FALSE)
+# Load extra data fields
+
+Raw <- read_csv("PPI_demographics.csv", na = "NULL")
+
+Extra <- Raw %>% 
+  rename(
+    NHI = nhi,
+    Ethnicity = ethnicitydesc1,
+    Ethnicity_long = primaryethnicitybroadgroup,
+    Locality = patcurrenttla
+  ) %>% 
+  select(NHI, Ethnicity, Ethnicity_long, Locality)
+
+glimpse(Extra)
+```
+
+```{r}
+# Join the extra fields to the Sample data
+
+Sample <- left_join(Sample, Extra, by = "NHI")
+
+glimpse(Sample)
+```
+
+```{r}
+# Transform the data for analysis
+
+Factor_list <- c("Gender", "Discharge_destination", "Ward", "Speciality", "PPI", "Duration", "Started_this_admission", "Concurrent_gi_irritant_therapy", "Indication_recorded", "If_new_on_admission_indication_in_discharge_summary", "Polypharmacy", "Ethnicity", "Ethnicity_long", "Locality")
+
+Sample <- mutate_at(Sample, vars(Factor_list), as.factor)
+
+glimpse(Sample)
+```
+
+
+
+```{r}
+#Code chunckj to extract NHI data to request additional data fields from DA - thanks to Paul & Quentin for providing additional data.
+
+# DA_Data <- Raw %>% 
+#   select(NHI)
+# write.table(DA_Data, "/home/greig/R-projects/PPI_2019/PPI_NHI.csv", row.names = FALSE)
+```
+
+```{r}
+# Load the population data
+
+Raw <- read_csv("PPI_Population.csv")
+```
+```{r}
+Population <- Raw %>% 
+  filter(year(DDATE) == 2018) %>% 
+  select(ADMAGE, GENDER, ETHGROUP, DOMTLA, SPECIALTY)
+
+Col_names <- names(Population)
+Raw_names <- as.data.frame(Col_names)
+Raw_names <- mutate_at(Raw_names, vars(Col_names), str_to_title)
+names(Population) <- Raw_names$Col_names
+
+Population <- Population %>% 
+  rename(Age = Admage,
+         Ethnicity = Ethgroup,
+         Locality = Domtla
+         )
+
+Population <- Population %>% 
+  mutate(Gender = fct_recode(Gender,
+                             "Male" = "M",
+                             "Female" = "F"))
+
+Factor_list <- c("Ethnicity", "Locality", "Specialty")
+Population <- mutate_at(Population, vars(Factor_list), as.factor)
+
+glimpse(Population)
+
 ```
 
