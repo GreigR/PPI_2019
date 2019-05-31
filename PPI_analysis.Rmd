@@ -13,6 +13,21 @@ library(tidyverse)
 ```{r}
 # Load other libraries
 
-# Currently nil
+library(readxl)
+library(lubridate)
+library(skimr)
+
+```
+
+```{r}
+Raw <- read_csv("PPI.csv")
+
+glimpse(Raw)
+```
+
+```{r}
+DA_Data <- Raw %>% 
+  select(NHI)
+write.table(DA_Data, "/home/greig/R-projects/PPI_2019/PPI_NHI.csv", row.names = FALSE)
 ```
 
