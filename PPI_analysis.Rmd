@@ -19,6 +19,7 @@ library(skimr)
 library(janitor)
 library(scales)
 library(treemap)
+library(gmodels)
 
 ```
 
@@ -252,5 +253,65 @@ PPI_poly_count <- fct_count(PPI_poly$Polypharmacy, sort = TRUE)
 PPI_poly_count
 
 treemap(PPI_poly_count, index = "f", vSize = "n", title = "Proportion of PPI users also with Polypharmacy")
+```
+
+## Who are the PPI users as compared other patients currently in hospital
+
+Is the age profile of patients on PPI different from others
+```{r}
+
+ggplot(Sample, aes(Age, fill = Currently_on_PPI)) +
+  geom_bar(binwidth =5) +
+  labs(title = "Is the Age profile different between PPI & non-PPI users?")
+
+ggplot(Sample, aes(Age, color = Currently_on_PPI)) +
+  geom_density() +
+  labs(title = "Is there a difference between the age profile of PPI users and non-users", subtitle = "Answer = Yes, p = 0.002")
+
+Age_1 <- Sample %>% 
+  filter(Currently_on_PPI == "Yes")
+
+Age_2 <- Sample %>% 
+  filter(Currently_on_PPI == "No")
+
+t.test(Age_1$Age, Age_2$Age)
+```
+
+Is there a gender difference between users and non-users
+```{r}
+CrossTable(Sample$Currently_on_PPI, Sample$Gender, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Gender))
+
+Gender_count <- fct_count(Current_users$Gender, sort = TRUE)
+
+Gender_count
+
+treemap(Gender_count, index = "f", vSize = "n", title = "Gender balance for PPI users")
+```
+
+### Is there any difference by Speciality or Ward?
+The answer is no (Speciality p = 0.16, Ward p = 0.24)
+```{r}
+CrossTable(Sample$Currently_on_PPI, Sample$Speciality, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+
+CrossTable(Sample$Currently_on_PPI, Sample$Ward, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+```
+
+### Is there any difference between locality or ethnicity? 
+The answer is no (Locality p = 0.1, Ethnicity p = 0.21)
+```{r}
+CrossTable(Sample$Currently_on_PPI, Sample$Locality, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+
+CrossTable(Sample$Currently_on_PPI, Sample$Ethnicity, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+```
+
+### Does the discharge destination have any impact on PPI usage?
+The answer is no (p = 0.29).
+```{r}
+CrossTable(Sample$Currently_on_PPI, Sample$Discharge_destination, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+
 ```
 
