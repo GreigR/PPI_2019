@@ -17,6 +17,8 @@ library(readxl)
 library(lubridate)
 library(skimr)
 library(janitor)
+library(scales)
+library(treemap)
 
 ```
 
@@ -107,7 +109,8 @@ names(Population) <- Raw_names$Col_names
 Population <- Population %>% 
   rename(Age = Admage,
          Ethnicity = Ethgroup,
-         Locality = Domtla
+         Locality = Domtla,
+         Speciality = Specialty
          )
 
 Population <- Population %>% 
@@ -115,10 +118,83 @@ Population <- Population %>%
                              "Male" = "M",
                              "Female" = "F"))
 
-Factor_list <- c("Ethnicity", "Locality", "Specialty")
+Factor_list <- c("Ethnicity", "Locality", "Speciality")
 Population <- mutate_at(Population, vars(Factor_list), as.factor)
 
 glimpse(Population)
 
+```
+
+```{r}
+# Further transformations of the Sample data set for ease of anaylsis
+
+Sample <- Sample %>% 
+  mutate(Currently_on_PPI = ifelse(!is.na(PPI), "Yes", "No"),
+         Started_this_admission = fct_recode(Started_this_admission,
+                                             "Yes" = "X",
+                                             "Yes" = "x"),
+         Indication_recorded = fct_recode(Indication_recorded,
+                                          "Yes" = "yes"),
+         Polypharmacy = fct_recode(Polypharmacy,
+                                   "Yes" = "yes"),
+         Duration = fct_recode(Duration,
+                               "1 to 5"  = "1 to5"))
+
+Sample$Currently_on_PPI <- as.factor(Sample$Currently_on_PPI)
+
+```
+
+# PPI usage within PNH - a shapshot
+This study is the point prevalence of PPI usage within PNH. The basic parameters of the study are;
+
+```{r}
+Total_patient <- nrow(Sample)
+Total_patient
+
+Total_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes") %>% 
+  nrow()
+Total_users
+
+Percent_users = round((Total_users/Total_patient)*100, digits = 2)
+#scales::percent(Percent_users)
+Percent_users
+```
+
+Of those folks on a PPI which PPI is most common;
+
+```{r}
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes")
+
+PPI_Type <- fct_count(Current_users$PPI, sort = TRUE)
+
+PPI_Type
+
+treemap(PPI_Type, index = "f", vSize = "n", title = "Which PPI is used most commonly")
+```
+
+How long had they been on the PPI
+```{r}
+Current_users <- Current_users %>% 
+  filter(!is.na(Duration))
+
+Duration_count <- fct_count(Current_users$Duration, sort = TRUE)
+
+Duration_count
+
+treemap(Duration_count, index = "f", vSize = "n", title = "How long have users been taking their PPI")
+```
+
+Of patients currently on PPI, how many are also on GI irritant medication
+```{r}
+Current_users <- Current_users %>% 
+  filter(!is.na(Concurrent_gi_irritant_therapy))
+
+Irritant_count <- fct_count(Current_users$Concurrent_gi_irritant_therapy, sort = TRUE)
+
+Irritant_count
+
+treemap(Irritant_count, index = "f", vSize = "n", title = "Where patients on PPI also on GI irritant medication")
 ```
 
