@@ -295,15 +295,43 @@ treemap(Gender_count, index = "f", vSize = "n", title = "Gender balance for PPI 
 ### Is there any difference by Speciality or Ward?
 The answer is no (Speciality p = 0.16, Ward p = 0.24)
 ```{r}
+Sample %>% 
+  tabyl(Speciality, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
 CrossTable(Sample$Currently_on_PPI, Sample$Speciality, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
 
+Sample %>% 
+  tabyl(Ward, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
 CrossTable(Sample$Currently_on_PPI, Sample$Ward, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
 ```
 
 ### Is there any difference between locality or ethnicity? 
-The answer is no (Locality p = 0.1, Ethnicity p = 0.21)
+The answer is no (Locality p = 0.1, Ethnicity p = 0.21), but do note Horowhenua residents are twice s likely to be on PPI. While not statistically significant overall, this may reflect the need for education in that locality.
 ```{r}
+
+Sample %>% 
+  tabyl(Locality, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+
+
 CrossTable(Sample$Currently_on_PPI, Sample$Locality, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
+
+Sample %>% 
+  tabyl(Ethnicity, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
 
 CrossTable(Sample$Currently_on_PPI, Sample$Ethnicity, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
 ```
@@ -313,5 +341,14 @@ The answer is no (p = 0.29).
 ```{r}
 CrossTable(Sample$Currently_on_PPI, Sample$Discharge_destination, prop.r = FALSE, prop.c = FALSE, prop.t = FALSE, prop.chisq = FALSE, chisq = TRUE)
 
+```
+
+```{r}
+Sample %>% 
+  tabyl(Ethnicity, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
 ```
 
