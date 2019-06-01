@@ -176,8 +176,9 @@ treemap(PPI_Type, index = "f", vSize = "n", title = "Which PPI is used most comm
 
 How long had they been on the PPI
 ```{r}
-Current_users <- Current_users %>% 
-  filter(!is.na(Duration))
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Duration))
 
 Duration_count <- fct_count(Current_users$Duration, sort = TRUE)
 
@@ -188,13 +189,68 @@ treemap(Duration_count, index = "f", vSize = "n", title = "How long have users b
 
 Of patients currently on PPI, how many are also on GI irritant medication
 ```{r}
-Current_users <- Current_users %>% 
-  filter(!is.na(Concurrent_gi_irritant_therapy))
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Concurrent_gi_irritant_therapy))
 
 Irritant_count <- fct_count(Current_users$Concurrent_gi_irritant_therapy, sort = TRUE)
 
 Irritant_count
 
 treemap(Irritant_count, index = "f", vSize = "n", title = "Where patients on PPI also on GI irritant medication")
+```
+
+Of patients currently on PPI what is their total daily dose in Omeprazole equivalents
+```{r}
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(PPI))
+
+ggplot(Current_users,aes(PPI, Total_daily_dose, fill = PPI)) +
+  geom_violin() +
+  geom_jitter(alpha = 0.2) +
+  coord_flip() +
+  labs(title = "What is the total daily dose of current PPI users") +
+  guides(fill = FALSE) +
+  theme_light()
+```
+
+Do we know why current users of PPI are on this medication
+```{r}
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Indication_recorded))
+
+Indication <- fct_count(Current_users$Indication_recorded, sort = TRUE)
+
+Indication
+
+treemap(Indication, index = "f", vSize = "n", title = "Do we know why current users are on their PPI")
+```
+
+If the PPI was started on this admission was the indication in the discharge summary
+```{r}
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(If_new_on_admission_indication_in_discharge_summary))
+
+Discharge_summary <- fct_count(Current_users$If_new_on_admission_indication_in_discharge_summary, sort = TRUE)
+
+Discharge_summary
+
+treemap(Discharge_summary, index = "f", vSize = "n", title = "Does the discharge summary tell why the patient was started on PPI")
+```
+
+Is polypharmacy common in patients on PPI
+```{r}
+PPI_poly <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Polypharmacy))
+
+PPI_poly_count <- fct_count(PPI_poly$Polypharmacy, sort = TRUE)
+
+PPI_poly_count
+
+treemap(PPI_poly_count, index = "f", vSize = "n", title = "Proportion of PPI users also with Polypharmacy")
 ```
 
