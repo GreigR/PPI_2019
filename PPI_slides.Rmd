@@ -11,5 +11,73 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 ```{r load_the_libraries}
 
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(skimr)
+library(janitor)
+library(scales)
+library(treemap)
+library(gmodels)
+
+```
+
+```{r load_then_tidy_the_data}
+#Read the raw data and tidy the data
+
+Raw <- read_csv("PPI.csv") %>% 
+  clean_names()
+
+Col_names <- names(Raw)
+Raw_names <- as.data.frame(Col_names)
+Raw_names <- mutate_at(Raw_names, vars(Col_names), str_to_title)
+names(Raw) <- Raw_names$Col_names
+
+#Remove hidden colums in the spreadsheet
+
+Sample <- Raw %>% 
+  select( Nhi, Age, Gender, Discharge_destination, Ward, Speciality, Ppi, Total_daily_dose, Duration, Started_this_admission, Concurrent_gi_irritant_therapy, Indication_recorded, If_new_on_admission_indication_in_discharge_summary, Polypharmacy)
+
+Sample <- Sample %>% 
+  rename(
+    NHI = Nhi,
+    PPI = Ppi)
+
+# Load extra data fields
+
+Raw <- read_csv("PPI_demographics.csv", na = "NULL")
+
+Extra <- Raw %>% 
+  rename(
+    NHI = nhi,
+    Ethnicity = ethnicitydesc1,
+    Ethnicity_long = primaryethnicitybroadgroup,
+    Locality = patcurrenttla
+  ) %>% 
+  select(NHI, Ethnicity, Ethnicity_long, Locality)
+
+Sample <- left_join(Sample, Extra, by = "NHI")
+
+```
+
+```{r transform_the_data}
+Factor_list <- c("Gender", "Discharge_destination", "Ward", "Speciality", "PPI", "Duration", "Started_this_admission", "Concurrent_gi_irritant_therapy", "Indication_recorded", "If_new_on_admission_indication_in_discharge_summary", "Polypharmacy", "Ethnicity", "Ethnicity_long", "Locality")
+
+Sample <- mutate_at(Sample, vars(Factor_list), as.factor)
+
+Sample <- Sample %>% 
+  mutate(Currently_on_PPI = ifelse(!is.na(PPI), "Yes", "No"),
+         Started_this_admission = fct_recode(Started_this_admission,
+                                             "Yes" = "X",
+                                             "Yes" = "x"),
+         Indication_recorded = fct_recode(Indication_recorded,
+                                          "Yes" = "yes"),
+         Polypharmacy = fct_recode(Polypharmacy,
+                                   "Yes" = "yes"),
+         Duration = fct_recode(Duration,
+                               "1 to 5"  = "1 to5"))
+
+Sample$Currently_on_PPI <- as.factor(Sample$Currently_on_PPI)
+
 ```
 
