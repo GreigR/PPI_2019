@@ -1,0 +1,15 @@
+---
+title: "PPI audit slides"
+author: "Dr Greig Russell"
+date: "6/8/2019"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+```
+
+```{r load_the_libraries}
+
+```
+

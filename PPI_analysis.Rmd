@@ -85,7 +85,7 @@ glimpse(Sample)
 
 
 ```{r}
-#Code chunckj to extract NHI data to request additional data fields from DA - thanks to Paul & Quentin for providing additional data.
+#Code chunk to extract NHI data to request additional data fields from DA - thanks to Paul & Quentin for providing additional data.
 
 # DA_Data <- Raw %>% 
 #   select(NHI)
@@ -158,7 +158,6 @@ Total_users <- Sample %>%
 Total_users
 
 Percent_users = round((Total_users/Total_patient)*100, digits = 2)
-#scales::percent(Percent_users)
 Percent_users
 ```
 
@@ -261,7 +260,7 @@ Is the age profile of patients on PPI different from others
 ```{r}
 
 ggplot(Sample, aes(Age, fill = Currently_on_PPI)) +
-  geom_bar(binwidth =5) +
+  geom_bar(binwidth = 5) +
   labs(title = "Is the Age profile different between PPI & non-PPI users?")
 
 ggplot(Sample, aes(Age, color = Currently_on_PPI)) +
