@@ -81,3 +81,220 @@ Sample$Currently_on_PPI <- as.factor(Sample$Currently_on_PPI)
 
 ```
 
+## Slide 1
+
+```{r summary}
+
+Total_patient <- nrow(Sample)
+
+Total_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes") %>% 
+  nrow()
+
+Percent_users = round((Total_users/Total_patient)*100, digits = 2)
+
+```
+
+The total number of patients in this point prevalence audit is `r Total_patient` of which `r Total_users` or `r Percent_users`% are currently prescribed a Proton Pump Inhibitor (PPI)
+
+## Slide 2
+
+```{r PPI_type}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes")
+
+PPI_Type <- fct_count(Current_users$PPI, sort = TRUE)
+
+treemap(PPI_Type, index = "f", vSize = "n", title = "Which is the most commonly used PPI?")
+
+```
+
+## Slide 3
+
+```{r duration}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Duration))
+
+Duration_count <- fct_count(Current_users$Duration, sort = TRUE)
+
+treemap(Duration_count, index = "f", vSize = "n", title = "What has been the duration of treatment ?")
+
+```
+
+## Slide 4
+
+```{r gut_irritant}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Concurrent_gi_irritant_therapy))
+
+Irritant_count <- fct_count(Current_users$Concurrent_gi_irritant_therapy, sort = TRUE)
+
+treemap(Irritant_count, index = "f", vSize = "n", title = "Where PPI users also presecibed a gut irritant medication")
+
+```
+
+## Slide 5
+
+```{r dosages}
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(PPI))
+
+ggplot(Current_users,aes(PPI, Total_daily_dose, fill = PPI)) +
+  geom_violin() +
+  geom_jitter(alpha = 0.2) +
+  coord_flip() +
+  labs(title = "What is the total daily dose of current PPI users", x = "Total daily dose in Omeprazole equivalents", y = "PPI name") +
+  guides(fill = FALSE) +
+  theme_light()
+```
+
+## Slide 6
+
+Please note "Yes" & "No" have an identical frequency, and the discontinued block is causing a visual distortion.
+
+```{r reasons}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Indication_recorded))
+
+Indication <- fct_count(Current_users$Indication_recorded, sort = TRUE)
+
+treemap(Indication, index = "f", vSize = "n", title = "Do we know why current users are on their PPI")
+
+```
+
+## Slide 7
+
+```{r discharged_summary}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(If_new_on_admission_indication_in_discharge_summary))
+
+Discharge_summary <- fct_count(Current_users$If_new_on_admission_indication_in_discharge_summary, sort = TRUE)
+
+treemap(Discharge_summary, index = "f", vSize = "n", title = "Is the PPI indication included in the discharge summary?")
+
+```
+
+## Slide 8
+
+```{r polypharmacy}
+PPI_poly <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Polypharmacy))
+
+PPI_poly_count <- fct_count(PPI_poly$Polypharmacy, sort = TRUE)
+
+treemap(PPI_poly_count, index = "f", vSize = "n", title = "In PPI users, is there also polypharmacy present?")
+```
+
+## Slide 9
+
+```{r age}
+
+ggplot(Sample, aes(Age, fill = Currently_on_PPI)) +
+  geom_bar(binwidth = 5) +
+  labs(title = "What is the age profile for PPI & non-PPI users?")
+
+```
+
+## Slide 10
+ 
+```{r age_density}
+ggplot(Sample, aes(Age, color = Currently_on_PPI)) +
+  geom_density() +
+  labs(title = "Is this age difference statistically significant", subtitle = "Answer = Yes, p = 0.002")
+```
+ 
+## Slide 11
+ 
+```{r gender}
+
+Current_users <- Sample %>% 
+  filter(Currently_on_PPI == "Yes",
+         !is.na(Gender))
+
+Gender_count <- fct_count(Current_users$Gender, sort = TRUE)
+
+treemap(Gender_count, index = "f", vSize = "n", title = "Gender balance in PPI user")
+
+```
+ 
+## Slide 12
+
+No significant difference is seen (p = 0.16)
+```{r speciality}
+
+Sample %>% 
+  tabyl(Speciality, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+
+kable(Sample)
+
+```
+
+## Slide 13
+
+No significant difference is seen (p = 0.24)
+```{r ward}
+
+Sample %>% 
+  tabyl(Ward, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+
+```
+
+## Slide 14
+
+No significant difference is seen (p = 0.1)
+```{r locality}
+
+Sample %>% 
+  tabyl(Locality, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+
+```
+
+## Slide 15
+
+No Significant difference is seen (p = 0.21)
+```{r ethnicity}
+Sample %>% 
+  tabyl(Ethnicity, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+```
+
+## Slide 16
+
+No significant difference is seen (p=0.29)
+```{r discharge_destination}
+
+Sample %>% 
+  tabyl(Discharge_destination, Currently_on_PPI) %>% 
+  adorn_totals(where = "row") %>% 
+  adorn_percentages(denominator = "col") %>% 
+  adorn_pct_formatting(digits = 0) %>% 
+  adorn_ns(position = "front")
+
+```
+
