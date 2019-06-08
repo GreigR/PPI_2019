@@ -233,14 +233,15 @@ treemap(Gender_count, index = "f", vSize = "n", title = "Gender balance in PPI u
 No significant difference is seen (p = 0.16)
 ```{r speciality}
 
-Sample %>% 
-  tabyl(Speciality, Currently_on_PPI) %>% 
+Table_chart <- Sample %>% 
+  rename(Specialty = Speciality) %>% 
+  tabyl(Specialty, Currently_on_PPI) %>% 
   adorn_totals(where = "row") %>% 
   adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front")
 
-kable(Sample)
+kable(Table_chart)
 
 ```
 
@@ -249,13 +250,14 @@ kable(Sample)
 No significant difference is seen (p = 0.24)
 ```{r ward}
 
-Sample %>% 
+Table_chart <- Sample %>% 
   tabyl(Ward, Currently_on_PPI) %>% 
   adorn_totals(where = "row") %>% 
   adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front")
 
+kable(Table_chart)
 ```
 
 ## Slide 14
@@ -263,12 +265,14 @@ Sample %>%
 No significant difference is seen (p = 0.1)
 ```{r locality}
 
-Sample %>% 
+Table_chart <- Sample %>% 
   tabyl(Locality, Currently_on_PPI) %>% 
   adorn_totals(where = "row") %>% 
   adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front")
+
+kable(Table_chart)
 
 ```
 
@@ -276,12 +280,15 @@ Sample %>%
 
 No Significant difference is seen (p = 0.21)
 ```{r ethnicity}
-Sample %>% 
+Table_chart <- Sample %>% 
   tabyl(Ethnicity, Currently_on_PPI) %>% 
   adorn_totals(where = "row") %>% 
   adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front")
+
+kable(Table_chart)
+
 ```
 
 ## Slide 16
@@ -289,12 +296,13 @@ Sample %>%
 No significant difference is seen (p=0.29)
 ```{r discharge_destination}
 
-Sample %>% 
+Table_chart <- Sample %>% 
   tabyl(Discharge_destination, Currently_on_PPI) %>% 
   adorn_totals(where = "row") %>% 
   adorn_percentages(denominator = "col") %>% 
   adorn_pct_formatting(digits = 0) %>% 
   adorn_ns(position = "front")
 
+kable(Table_chart)
 ```
 
