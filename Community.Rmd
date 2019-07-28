@@ -1,0 +1,51 @@
+---
+title: "Community PPI usage"
+output: html_notebook
+---
+
+```{r}
+# load the tidyverse
+
+library(tidyverse)
+
+```
+
+```{r}
+# load other libraries
+
+library(readxl)
+library(janitor)
+library(lubridate)
+library(ggthemes)
+
+```
+
+```{r}
+# Load the data
+
+Raw <- read_excel("Primary_PPI.xlsx", sheet = "Sheet1") %>% 
+  clean_names()
+
+Col_names <- names(Raw)
+Raw_names <- as.data.frame(Col_names)
+Raw_names <- mutate_at(Raw_names, vars(Col_names), str_to_title)
+names(Raw) <- Raw_names$Col_names
+PPI <- Raw
+
+glimpse(PPI)
+```
+
+```{r}
+# tidy the data
+
+Factor_list <- c("Chemical_name", "Base_units", "Registration", "Practitioner")
+PPI <- mutate_at(PPI, vars(Factor_list), as.factor)
+
+PPI <- PPI %>% 
+  rename(NHI = Nhi,
+         Dose = Weight) %>% 
+  select(-Therapeutic_group_3, -Month, -Year, -Week_no, -Quarter)
+
+glimpse(PPI)
+```
+

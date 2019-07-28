@@ -6,4 +6,6 @@ This is the the analysis of the point prevalence of PPI usage at a snap shot tim
 
 The provided Sample data has been supplemented with Ethnicity and locality data. A comparison Population data from CY 2018 has also been loaded, so it is also available to supplement the analysis when appropriate.
 
+There has been a request for a similar analysis based on community prescribing habits. The data has been obtained from DQHI so that this can now commence.
+
 Greig Russell
