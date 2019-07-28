@@ -49,3 +49,14 @@ PPI <- PPI %>%
 glimpse(PPI)
 ```
 
+```{r}
+Practitioner <- fct_count(PPI$Practitioner, sort = TRUE) %>% 
+  filter(n > 700)
+
+ggplot(Practitioner, aes(fct_reorder(f, n), n)) +
+  geom_col() +
+  coord_flip() +
+  theme_light()
+
+```
+
