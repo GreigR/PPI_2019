@@ -50,7 +50,7 @@ glimpse(PPI)
 ```
 
 ```{r}
-Practitioner <- fct_count(PPI$Practitioner, sort = TRUE) %>% 
+Practitioner <- fct_count(PPI$Registration, sort = TRUE) %>% 
   filter(n > 700)
 
 ggplot(Practitioner, aes(fct_reorder(f, n), n)) +
@@ -58,5 +58,10 @@ ggplot(Practitioner, aes(fct_reorder(f, n), n)) +
   coord_flip() +
   theme_light()
 
+```
+
+```{r}
+min(PPI$Dispensed_date)
+max(PPI$Dispensed_date)
 ```
 
